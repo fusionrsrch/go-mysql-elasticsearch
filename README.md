@@ -8,7 +8,7 @@ It uses `mysqldump` to fetch the origin data at first, then syncs data increment
 
 ## Install 
 + `go get github.com/fusionrsrch/go-mysql-elasticsearch`, it will print some messages in console, skip it. :-)
-+ cd `$GOPATH/src/github.com/siddontang/go-mysql-elasticsearch`
++ `cd $GOPATH/src/github.com/fusionrsrch/go-mysql-elasticsearch`
 + `make`
 
 ## How to use?
