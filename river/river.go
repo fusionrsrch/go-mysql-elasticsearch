@@ -5,9 +5,9 @@ import (
 	"regexp"
 	"sync"
 
-	"github.com/siddontang/go-mysql/canal"
+	"github.com/fusionrsrch/go-mysql/canal"
 
-	"github.com/siddontang/go-mysql-elasticsearch/elastic"
+	"github.com/fusionrsrch/go-mysql-elasticsearch/elastic"
 	"github.com/siddontang/go/log"
 )
 
@@ -30,6 +30,8 @@ type River struct {
 }
 
 func NewRiver(c *Config) (*River, error) {
+	fmt.Println("  NewRiver")
+
 	r := new(River)
 
 	r.c = c
@@ -39,20 +41,28 @@ func NewRiver(c *Config) (*River, error) {
 	r.rules = make(map[string]*Rule)
 
 	var err error
+	fmt.Println("  NewRiver: newCanal()")
 	if err = r.newCanal(); err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
+	fmt.Println("  NewRiver: prepareRule()")
 	if err = r.prepareRule(); err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
+	fmt.Println("  NewRiver: prepareCanal()")
 	if err = r.prepareCanal(); err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
 	// We must use binlog full row image
+	fmt.Println("  NewRiver: canal.CheckBinlogRowImage()")
 	if err = r.canal.CheckBinlogRowImage("FULL"); err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
@@ -65,6 +75,8 @@ func NewRiver(c *Config) (*River, error) {
 }
 
 func (r *River) newCanal() error {
+	fmt.Println("  newCanal()")
+
 	cfg := canal.NewDefaultConfig()
 	cfg.Addr = r.c.MyAddr
 	cfg.User = r.c.MyUser
@@ -81,6 +93,7 @@ func (r *River) newCanal() error {
 }
 
 func (r *River) prepareCanal() error {
+	fmt.Println("  prepareCanal()")
 	var db string
 	dbs := map[string]struct{}{}
 	tables := make([]string, 0, len(r.rules))
@@ -109,6 +122,7 @@ func (r *River) prepareCanal() error {
 }
 
 func (r *River) newRule(schema, table string) error {
+	fmt.Println("  newRule")
 	key := ruleKey(schema, table)
 
 	if _, ok := r.rules[key]; ok {
@@ -120,6 +134,7 @@ func (r *River) newRule(schema, table string) error {
 }
 
 func (r *River) parseSource() (map[string][]string, error) {
+	fmt.Println("  parseSource")
 	wildTables := make(map[string][]string, len(r.c.Sources))
 
 	// first, check sources
@@ -172,6 +187,7 @@ func (r *River) parseSource() (map[string][]string, error) {
 }
 
 func (r *River) prepareRule() error {
+	fmt.Println("  prepareRule")
 	wildtables, err := r.parseSource()
 	if err != nil {
 		return err
@@ -230,10 +246,12 @@ func (r *River) prepareRule() error {
 }
 
 func ruleKey(schema string, table string) string {
+	fmt.Println("  ruleKey")
 	return fmt.Sprintf("%s:%s", schema, table)
 }
 
 func (r *River) Run() error {
+	fmt.Println("  Run")
 	if err := r.canal.Start(); err != nil {
 		log.Errorf("start canal err %v", err)
 		return err
@@ -243,6 +261,7 @@ func (r *River) Run() error {
 }
 
 func (r *River) Close() {
+	fmt.Println("  Close")
 	log.Infof("closing river")
 	close(r.quit)
 

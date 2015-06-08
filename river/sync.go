@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/siddontang/go-mysql-elasticsearch/elastic"
-	"github.com/siddontang/go-mysql/canal"
-	"github.com/siddontang/go-mysql/schema"
+	"github.com/fusionrsrch/go-mysql-elasticsearch/elastic"
+	"github.com/fusionrsrch/go-mysql/canal"
+	"github.com/fusionrsrch/go-mysql/schema"
 	"github.com/siddontang/go/log"
 )
 

@@ -1,0 +1,29 @@
+# MySQL address, user and password
+# user must have replication privilege in MySQL.
+myaddr: "127.0.0.1:3306"
+myuser: "root"
+mypass: ""
+
+# Elasticsearch address
+esaddr: "127.0.0.1:9200"
+
+# Path to store data, like master.info, and dump MySQL data
+datadir: "./var"
+
+# Inner Http status address
+stataddr: "127.0.0.1:12800"
+
+# pseudo server id like a slave
+serverid: 1001
+
+# mysql or mariadb
+flavor: "mysql"
+
+# mysqldump execution path
+dumpexec: "mysqldump"
+
+sources:
+  - schema: v4
+    tables:
+      - questions
+      - objects

@@ -1,52 +1,58 @@
 package river
 
 import (
+	"fmt"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
-
-	"github.com/BurntSushi/toml"
 )
 
 type SourceConfig struct {
-	Schema string   `toml:"schema"`
-	Tables []string `toml:"tables"`
+	Schema string
+	Tables []string
 }
 
 type Config struct {
-	MyAddr     string `toml:"my_addr"`
-	MyUser     string `toml:"my_user"`
-	MyPassword string `toml:"my_pass"`
+	MyAddr     string
+	MyUser     string
+	MyPassword string
 
-	ESAddr string `toml:"es_addr"`
+	ESAddr string
 
-	StatAddr string `toml:"stat_addr"`
+	StatAddr string
 
-	ServerID uint32 `toml:"server_id"`
-	Flavor   string `toml:"flavor"`
-	DataDir  string `toml:"data_dir"`
+	ServerID uint32
+	Flavor   string
+	DataDir  string
 
-	DumpExec string `toml:"mysqldump"`
+	DumpExec string
 
-	Sources []SourceConfig `toml:"source"`
+	Sources []SourceConfig
 
-	Rules []*Rule `toml:"rule"`
+	Rules []*Rule
 }
 
 func NewConfigWithFile(name string) (*Config, error) {
+
+	fmt.Println("NewConfigWithFile")
+
 	data, err := ioutil.ReadFile(name)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
-	return NewConfig(string(data))
+	return NewConfig(data)
 }
 
-func NewConfig(data string) (*Config, error) {
-	var c Config
+func NewConfig(data []byte) (*Config, error) {
+	var config Config
 
-	_, err := toml.Decode(data, &c)
+	err := yaml.Unmarshal(data, &config)
 	if err != nil {
-		return nil, err
+		fmt.Println(err)
+		panic(err)
 	}
+	fmt.Printf("Value: %#v\n", config)
 
-	return &c, nil
+	return &config, nil
 }

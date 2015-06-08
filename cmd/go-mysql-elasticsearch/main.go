@@ -2,15 +2,16 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"os/signal"
 	"runtime"
 	"syscall"
 
-	"github.com/siddontang/go-mysql-elasticsearch/river"
+	"github.com/fusionrsrch/go-mysql-elasticsearch/river"
 )
 
-var configFile = flag.String("config", "./etc/river.toml", "go-mysql-elasticsearch config file")
+var configFile = flag.String("config", "./etc/river.yaml", "go-mysql-elasticsearch config file")
 var my_addr = flag.String("my_addr", "", "MySQL addr")
 var my_user = flag.String("my_user", "", "MySQL user")
 var my_pass = flag.String("my_pass", "", "MySQL password")
@@ -21,6 +22,9 @@ var flavor = flag.String("flavor", "", "flavor: mysql or mariadb")
 var execution = flag.String("exec", "", "mysqldump execution path")
 
 func main() {
+
+	fmt.Println("Go MySQL ElasticSearch")
+
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	flag.Parse()
 
@@ -33,10 +37,15 @@ func main() {
 		syscall.SIGTERM,
 		syscall.SIGQUIT)
 
+	fmt.Println("Loading config ...")
 	cfg, err := river.NewConfigWithFile(*configFile)
+
 	if err != nil {
-		println(err.Error())
+		//println(err.Error())
+		fmt.Println(err)
 		return
+	} else {
+		fmt.Println(cfg)
 	}
 
 	if len(*my_addr) > 0 {
@@ -71,11 +80,14 @@ func main() {
 		cfg.DumpExec = *execution
 	}
 
+	fmt.Println("Start river.NewRiver() ...")
 	r, err := river.NewRiver(cfg)
 	if err != nil {
-		println(err.Error())
+		//println(err.Error())
+		fmt.Println(err)
 		return
 	}
+	fmt.Println(r)
 
 	go func() {
 		<-sc
